@@ -1,5 +1,7 @@
 import 'package:car_help_app/screens/home.dart';
+import 'package:car_help_app/ui_helper/snakbar.dart';
 import 'package:car_help_app/ui_helper/ui_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
@@ -12,6 +14,9 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
+  final _emailC = TextEditingController();
+  final _passwordC = TextEditingController();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +54,7 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
+                  controller: _emailC,
                   decoration: InputDecoration(
                     icon: const Icon(Icons.email),
                     hintText: 'Enter Email',
@@ -66,6 +72,7 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
+                  controller: _passwordC,
                   decoration: InputDecoration(
                     icon: const Icon(Icons.lock),
                     hintText: 'Enter Password',
@@ -93,17 +100,40 @@ class _LoginState extends State<Login> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       SmallButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Home(),
-                              ),
-                            );
+                            _isLoading = true;
+                            setState(() {});
+                            try {
+                              final UserCredential? credential =
+                                  await FirebaseAuth.instance
+                                      .signInWithEmailAndPassword(
+                                          email: _emailC.text,
+                                          password: _passwordC.text);
+                              if (credential != null) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const Home(),
+                                  ),
+                                );
+                              }
+                            } on FirebaseAuthException catch (e) {
+                              if (e.code == 'user-not-found') {
+                                print('No user found for that email.');
+                              } else if (e.code == 'wrong-password') {
+                                print('Wrong password provided for that user.');
+                              }
+                              kSnakbar(
+                                  context, e.message ?? "something went wrong");
+                              _isLoading = false;
+                              setState(() {});
+                            }
                           }
                         },
-                        text: 'Login',
+                        text: _isLoading
+                            ? CircularProgressIndicator()
+                            : Text('Login'),
                       ),
                     ],
                   ),

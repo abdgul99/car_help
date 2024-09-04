@@ -83,7 +83,7 @@ class SmallButton extends StatelessWidget {
     required this.onPressed,
   });
 
-  final String text;
+  final Widget text;
   final void Function()? onPressed;
 
   @override
@@ -97,9 +97,7 @@ class SmallButton extends StatelessWidget {
           backgroundColor: Colors.amber.shade400,
           foregroundColor: Colors.black,
         ),
-        child: Text(
-          text,
-        ),
+        child: text,
       ),
     );
   }
