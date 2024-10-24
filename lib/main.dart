@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -14,9 +13,6 @@ const String contacts = "contacts";
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  final dir = await getApplicationDocumentsDirectory();
-  Hive.defaultDirectory = dir.path;
   await FlutterContacts.requestPermission();
 
   var status = await Permission.sms.status;
@@ -30,7 +26,7 @@ void main() async {
   if (locationPermission == LocationPermission.denied) {
     await Geolocator.requestPermission();
   }
-
+// change
   // Hive.registerAdapter("contact", fromJson)
   // Hive.box(name: contacts);
 

@@ -42,8 +42,8 @@ dependencies:
   # state management
   flutter_riverpod: ^2.5.1
   # hive 
-  hive: ^4.0.0-dev.2
-  isar_flutter_libs: ^4.0.0-dev.13
+  # hive: ^4.0.0-dev.2
+  # isar_flutter_libs: ^4.0.0-dev.13
   path_provider: ^2.1.0
   # Messages Config
   # sms_advanced: ^1.0.1
