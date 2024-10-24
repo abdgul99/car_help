@@ -9,17 +9,20 @@ class UserModel {
   final String name;
   final String email;
   final String phoneNumber;
+
+  final String image;
+  final String message;
   final Timestamp createdAt;
   final Timestamp modifiedAt;
-  final UserType userType;
 
   UserModel({
     required this.name,
     required this.email,
     required this.phoneNumber,
     required this.createdAt,
+    required this.image,
+    required this.message,
     required this.modifiedAt,
-    required this.userType,
   });
 
   // Convert a Map to a UserModel instance
@@ -27,10 +30,11 @@ class UserModel {
     return UserModel(
       name: map['name'] as String,
       email: map['email'] as String,
+      image: map["image"] ?? "",
       phoneNumber: map['phone_number'] as String,
       createdAt: map['created_at'] as Timestamp,
+      message: map["message"] ?? "",
       modifiedAt: map['modified_at'] as Timestamp,
-      userType: _userTypeFromString(map['user_type'] as String),
     );
   }
 
@@ -40,9 +44,10 @@ class UserModel {
       'name': name,
       'email': email,
       'phone_number': phoneNumber,
+      "message": message,
+      "image": image,
       'created_at': createdAt,
       'modified_at': modifiedAt,
-      'user_type': _userTypeToString(userType),
     };
   }
 
@@ -57,15 +62,18 @@ class UserModel {
     String? phoneNumber,
     Timestamp? createdAt,
     Timestamp? modifiedAt,
+    String? message,
+    String? image,
     UserType? userType,
   }) {
     return UserModel(
       name: name ?? this.name,
       email: email ?? this.email,
+      image: image ?? this.image,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      message: message ?? this.message,
       createdAt: createdAt ?? this.createdAt,
       modifiedAt: modifiedAt ?? this.modifiedAt,
-      userType: userType ?? this.userType,
     );
   }
 

@@ -1,6 +1,6 @@
 import 'package:car_help_app/models/users.dart';
 import 'package:car_help_app/screens/auth/login.dart';
-import 'package:car_help_app/screens/home.dart';
+import 'package:car_help_app/screens/main_layout.dart';
 import 'package:car_help_app/ui_helper/snakbar.dart';
 import 'package:car_help_app/ui_helper/ui_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,16 +27,25 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.amber.shade300,
+        // backgroundColor: Colors.amber.shade300,
         elevation: 0.0,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Center(
-            child: Icon(Icons.arrow_back_ios),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[Colors.amber, Colors.white]),
           ),
         ),
+        leading: null,
+        // leading: IconButton(
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        //   icon: const Center(
+        //     child: Icon(Icons.arrow_back_ios),
+        //   ),
+        // ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -157,7 +166,7 @@ class _SignUpState extends State<SignUp> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const Home(),
+                                builder: (context) => const MainLayout(),
                               ),
                             );
                           }
@@ -165,8 +174,8 @@ class _SignUpState extends State<SignUp> {
                       }
                     },
                     text: _isLoading
-                        ? CircularProgressIndicator()
-                        : Text('Signup'),
+                        ? const CircularProgressIndicator()
+                        : const Text('Signup'),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -229,12 +238,14 @@ class _SignUpState extends State<SignUp> {
         .collection("users")
         .doc(userCredential.user!.uid);
     final user = UserModel(
-        name: _nameC.text,
-        email: _emailC.text,
-        phoneNumber: _phoneC.text,
-        createdAt: Timestamp.now(),
-        modifiedAt: Timestamp.now(),
-        userType: UserType.normalUser);
+      name: _nameC.text,
+      email: _emailC.text,
+      phoneNumber: _phoneC.text,
+      message: "Help me!",
+      image: "",
+      createdAt: Timestamp.now(),
+      modifiedAt: Timestamp.now(),
+    );
     firebase.set(user.toMap());
   }
 }

@@ -1,4 +1,7 @@
-import 'package:car_help_app/screens/home.dart';
+import 'package:car_help_app/screens/auth/forgot_password.dart';
+import 'package:car_help_app/screens/auth/signup.dart';
+import 'package:car_help_app/screens/home/home.dart';
+import 'package:car_help_app/screens/main_layout.dart';
 import 'package:car_help_app/ui_helper/snakbar.dart';
 import 'package:car_help_app/ui_helper/ui_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,23 +25,34 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.amber.shade300,
-        surfaceTintColor: Colors.transparent,
+        // backgroundColor: Colors.amber.shade300,
         elevation: 0.0,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Center(child: Icon(Icons.arrow_back_ios)),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[Colors.amber, Colors.white]),
+          ),
         ),
+        leading: null,
+        // leading: IconButton(
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        //   icon: const Center(
+        //     child: Icon(Icons.arrow_back_ios),
+        //   ),
+        // ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Form(
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
                   'Login',
@@ -89,7 +103,14 @@ class _LoginState extends State<Login> {
                 Align(
                   alignment: Alignment.topRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ForgotPassword(),
+                        ),
+                      );
+                    },
                     child: const Text('Forgot Password?'),
                   ),
                 ),
@@ -114,7 +135,7 @@ class _LoginState extends State<Login> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const Home(),
+                                    builder: (context) => const MainLayout(),
                                   ),
                                 );
                               }
@@ -144,7 +165,14 @@ class _LoginState extends State<Login> {
                   children: [
                     const Text("Don't have an account?"),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SignUp(),
+                          ),
+                        );
+                      },
                       child: const Text('SignUp'),
                     ),
                   ],
