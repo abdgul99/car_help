@@ -76,27 +76,29 @@ class _HomeTabState extends State<HomeTab> {
               //     child: const Text("Your final message")),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: TextFormField(
-                  controller: messagesC,
-                  readOnly: readOnly,
-                  maxLength: 100,
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                        onPressed: () {
-                          readOnly = !readOnly;
-                          if (readOnly) {
-                            print("save");
-                            FirebaseFirestore.instance
-                                .collection("users")
-                                .doc(FirebaseAuth.instance.currentUser!.uid)
-                                .update({"message": messagesC.text});
-                          }
-                          setState(() {});
-                        },
-                        icon: readOnly ? Icon(Icons.edit) : Icon(Icons.save)),
-                    border: const OutlineInputBorder(),
-                    label: Text("Custom SOS message"),
+                child: SizedBox(
+                  child: TextFormField(
+                    controller: messagesC,
+                    readOnly: readOnly,
+                    maxLength: 100,
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            readOnly = !readOnly;
+                            if (readOnly) {
+                              print("save");
+                              FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                  .update({"message": messagesC.text});
+                            }
+                            setState(() {});
+                          },
+                          icon: readOnly ? Icon(Icons.edit) : Icon(Icons.save)),
+                      border: const OutlineInputBorder(),
+                      label: Text("Custom SOS message"),
+                    ),
                   ),
                 ),
               ),
@@ -150,6 +152,39 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                 ),
               ),
+              SizedBox(height: 10),
+              Stack(
+                children: [
+                  Center(
+                    child: CustomPaint(
+                      painter: TrianglePainter(
+                        strokeColor: Colors.blue,
+                        strokeWidth: 0,
+                        paintingStyle: PaintingStyle.fill,
+                      ),
+                      child: const SizedBox(
+                        height: 15,
+                        width: 25,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 14),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                      ),
+                      child: Center(
+                        child: Text(
+                          "${messagesC.text}\nAddress:\nMap:",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              )
             ],
           );
   }
@@ -224,6 +259,42 @@ void saveMessage(
       createdAt: Timestamp.now(),
       message: message);
   firebase.set(messageModel.toJson());
+}
+
+class TrianglePainter extends CustomPainter {
+  final Color strokeColor;
+  final PaintingStyle paintingStyle;
+  final double strokeWidth;
+
+  TrianglePainter(
+      {this.strokeColor = Colors.black,
+      this.strokeWidth = 3,
+      this.paintingStyle = PaintingStyle.stroke});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = strokeColor
+      ..strokeWidth = strokeWidth
+      ..style = paintingStyle;
+
+    canvas.drawPath(getTrianglePath(size.width, size.height), paint);
+  }
+
+  Path getTrianglePath(double x, double y) {
+    return Path()
+      ..moveTo(0, y)
+      ..lineTo(x / 2, 0)
+      ..lineTo(x, y)
+      ..lineTo(0, y);
+  }
+
+  @override
+  bool shouldRepaint(TrianglePainter oldDelegate) {
+    return oldDelegate.strokeColor != strokeColor ||
+        oldDelegate.paintingStyle != paintingStyle ||
+        oldDelegate.strokeWidth != strokeWidth;
+  }
 }
 
 Future<Position> determinePosition() async {

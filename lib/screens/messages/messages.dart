@@ -61,7 +61,7 @@ class MessagesTab extends StatelessWidget {
                             trailing:
                                 Text(message.createdAt.toDate().toString()),
                             title: Text(
-                              "${message.name}\n ${message.contact}",
+                              "${message.name}\n${message.contact}",
                               style: TextStyle(fontSize: 11),
                             ),
                             subtitle: Text(message.message),
