@@ -28,11 +28,17 @@ class _HomeTabState extends State<HomeTab> {
   final messagesC = TextEditingController();
   List<ContactModel> sContacts = [];
   bool isLoading = false;
+  String? mapLinks;
 
   @override
   void initState() {
     getMessage(context);
     // TODO: implement initState
+  }
+
+  getLocationLink(Position position) {
+    mapLinks =
+        "Find on Map: http://maps.apple.com/?q=help&ll=${position.latitude},${position.longitude}\n\nhttps://www.google.com/maps/search/?api=1&q=help&query=${position.latitude},${position.longitude}";
   }
 
   Future<void> getMessage(BuildContext context) async {
@@ -50,6 +56,8 @@ class _HomeTabState extends State<HomeTab> {
           .get();
 
       messagesC.text = firebase.data()!.message; // Set the text
+      var position = await Geolocator.getCurrentPosition();
+      getLocationLink(position);
       setState(() {});
     } catch (e) {
       // Handle error (e.g., show a snackbar)
@@ -126,13 +134,8 @@ class _HomeTabState extends State<HomeTab> {
                       if (countdown > 0) {
                         kSnakbar(context, "SOS is already in progress");
                       }
-                      var position = await Geolocator.getCurrentPosition();
-                      List<Placemark> placemarks =
-                          await placemarkFromCoordinates(
-                              position.altitude, position.longitude);
 
-                      print(placemarks);
-                      // sendMessages(context);
+                      sendMessages(context);
                     },
                     child: countdown > 0
                         ? Text(
@@ -175,10 +178,15 @@ class _HomeTabState extends State<HomeTab> {
                       decoration: BoxDecoration(
                         color: Colors.blue,
                       ),
-                      child: Center(
-                        child: Text(
-                          "${messagesC.text}\nAddress:\nMap:",
-                          style: TextStyle(color: Colors.white),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text.rich(
+                            TextSpan(text: "${messagesC.text}\n", children: [
+                              if (mapLinks != null) TextSpan(text: mapLinks),
+                            ]),
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
@@ -189,6 +197,7 @@ class _HomeTabState extends State<HomeTab> {
           );
   }
 
+// Find on Map: http://maps.apple.com/?q=help&ll=$latitude,$longitude\n\nhttps://www.google.com/maps/search/?api=1&q=help&query=$latitude,$longitude
   Future<void> sendMessages(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     List<String>? jsonList = prefs.getStringList('contacts');
@@ -214,16 +223,17 @@ class _HomeTabState extends State<HomeTab> {
     for (int i = 0; i < sContacts.length; i++) {
       // Wait for the countdown before sending the message
       await Future.delayed(Duration(seconds: 5));
+      String sendIngLink = mapLinks ?? "";
+      var result = await BackgroundSms.sendMessage(
+          phoneNumber: sContacts[i].contact,
+          message: "${messagesC.text}\n$sendIngLink");
 
-      // var result = await BackgroundSms.sendMessage(
-      //     phoneNumber: sContacts[i].contact, message: "My SOS message");
-
-      if (false) {
+      if (result == SmsStatus.sent) {
         print("Message to ${sContacts[i].contact} sent successfully!");
         saveMessage(
             phoneNmuber: sContacts[i].contact,
             name: sContacts[i].name,
-            message: "My SOS Message ");
+            message: "${messagesC.text}\n$sendIngLink");
         kSnakbar(
             context, "Message to ${sContacts[i].contact} sent successfully!");
       } else {

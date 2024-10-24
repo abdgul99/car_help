@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:car_help_app/models/users.dart';
 import 'package:car_help_app/screens/auth/login.dart';
 import 'package:car_help_app/screens/home/home.dart';
@@ -6,7 +8,9 @@ import 'package:car_help_app/ui_helper/snakbar.dart';
 import 'package:car_help_app/ui_helper/ui_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -26,6 +30,7 @@ class _ProfileTabState extends State<ProfileTab> {
   bool _isLoading = false;
   UserModel? _userModel;
   bool error = false;
+  XFile? _xfile;
   @override
   void initState() {
     // TODO: implement initState
@@ -48,7 +53,7 @@ class _ProfileTabState extends State<ProfileTab> {
           .get();
       var userModel = firebase.data();
 
-      userModel = userModel;
+      _userModel = userModel;
       _nameC.text = userModel!.name;
       _emailC.text = userModel.email;
       _phoneC.text = userModel.phoneNumber;
@@ -59,6 +64,38 @@ class _ProfileTabState extends State<ProfileTab> {
     }
     _isLoading = false;
     setState(() {});
+  }
+
+  Future<String?> uploadPic() async {
+    // Get the file from the image picker and store it
+    FirebaseStorage storage = FirebaseStorage.instance;
+    final ImagePicker picker = ImagePicker();
+
+    // Pick an image.
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    _xfile = image;
+    setState(() {});
+    if (image == null) {
+      // If no image is selected, return null or handle the case as needed.
+      return null;
+    }
+
+    // Create a reference to the location you want to upload to in Firebase
+    var reference = storage.ref().child("images/${image.name}");
+
+    // Upload the file to Firebase
+    File file = File(image.path);
+    await reference.putFile(file);
+
+    // Get the download URL
+    String downloadUrl = await reference.getDownloadURL();
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({"image": downloadUrl});
+
+    // Return the download URL
+    return downloadUrl;
   }
 
   @override
@@ -90,12 +127,28 @@ class _ProfileTabState extends State<ProfileTab> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const SizedBox(height: 60),
-                          CircleAvatar(
-                            radius: 50,
-                            child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.camera_alt_rounded)),
-                          ),
+                          if (_xfile != null)
+                            CircleAvatar(
+                              radius: 50,
+                              foregroundImage: FileImage(File(_xfile!.path)),
+                              child: IconButton(
+                                  onPressed: () {
+                                    uploadPic();
+                                  },
+                                  icon: Icon(Icons.camera_alt_rounded)),
+                            ),
+                          if (_xfile == null)
+                            CircleAvatar(
+                              radius: 50,
+                              foregroundImage: _userModel == null
+                                  ? null
+                                  : NetworkImage(_userModel!.image),
+                              child: IconButton(
+                                  onPressed: () {
+                                    uploadPic();
+                                  },
+                                  icon: Icon(Icons.camera_alt_rounded)),
+                            ),
                           const SizedBox(height: 10),
                           TextFormField(
                             controller: _nameC,
