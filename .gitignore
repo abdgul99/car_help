@@ -30,6 +30,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+/Users/mac/Documents/car_help_app/.dart_tool
 
 # Symbolication related
 app.*.symbols
