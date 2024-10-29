@@ -4,11 +4,13 @@ import 'dart:developer';
 import 'package:background_sms/background_sms.dart';
 import 'package:car_help_app/models/contacts.dart';
 import 'package:car_help_app/repo/user_profile.dart';
+import 'package:car_help_app/screens/auth/login.dart';
 import 'package:car_help_app/screens/home/add_contacts.dart';
 import 'package:car_help_app/screens/home/home.dart';
 import 'package:car_help_app/screens/home/sos_contact_list.dart';
 import 'package:car_help_app/screens/messages/messages.dart';
 import 'package:car_help_app/screens/profile/profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -122,6 +124,23 @@ class _MainLayoutState extends State<MainLayout>
                 },
                 icon: const Icon(Icons.add),
               ),
+            if (currentIndex == 2)
+              IconButton(
+                onPressed: () async {
+                  final logout = await showLogoutDialog(context);
+                  if (logout == null) return;
+                  if (logout) {
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Login(),
+                        ),
+                        (_) => false);
+                  }
+                },
+                icon: const Icon(Icons.logout),
+              ),
           ],
         ),
         body: _tab[currentIndex],
@@ -144,4 +163,30 @@ class _MainLayoutState extends State<MainLayout>
     }
     ;
   }
+}
+
+Future<bool?> showLogoutDialog(BuildContext context) {
+  return showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Confirm'),
+        content: Text('Are you sure you want to Log Out?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // Return false for No
+            },
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true); // Return true for Yes
+            },
+            child: Text('Yes'),
+          ),
+        ],
+      );
+    },
+  );
 }

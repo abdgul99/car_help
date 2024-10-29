@@ -36,9 +36,10 @@ class _HomeTabState extends State<HomeTab> {
     // TODO: implement initState
   }
 
+// http://maps.apple.com/?q=help&ll=${position.latitude},${position.longitude}\n\n
   getLocationLink(Position position) {
     mapLinks =
-        "Find on Map: http://maps.apple.com/?q=help&ll=${position.latitude},${position.longitude}\n\nhttps://www.google.com/maps/search/?api=1&q=help&query=${position.latitude},${position.longitude}";
+        "Find on Map: https://www.google.com/maps/search/?api=1&q=help&query=${position.latitude},${position.longitude}";
   }
 
   Future<void> getMessage(BuildContext context) async {
@@ -134,8 +135,12 @@ class _HomeTabState extends State<HomeTab> {
                       if (countdown > 0) {
                         kSnakbar(context, "SOS is already in progress");
                       }
-
-                      sendMessages(context);
+                      final isSend = await showConfirmationDialog(context);
+                      if (isSend == null) return;
+                      if (isSend) {
+                        sendMessages(context);
+                        // print(isSend);
+                      }
                     },
                     child: countdown > 0
                         ? Text(
@@ -222,7 +227,7 @@ class _HomeTabState extends State<HomeTab> {
     setState(() {});
     for (int i = 0; i < sContacts.length; i++) {
       // Wait for the countdown before sending the message
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 5));
       String sendIngLink = mapLinks ?? "";
       var result = await BackgroundSms.sendMessage(
           phoneNumber: sContacts[i].contact,
@@ -344,65 +349,28 @@ Future<Position> determinePosition() async {
   return await Geolocator.getCurrentPosition();
 }
 
-// drawer: Drawer(
-//             child: userW.when(
-//           data: (data) => ListView(
-//             padding: EdgeInsets.zero,
-//             children: <Widget>[
-//               DrawerHeader(
-//                 decoration: BoxDecoration(
-//                   color: Colors.amber.shade300,
-//                 ),
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     Text(
-//                       data.name, // Replace with actual user name
-//                       style: TextStyle(
-//                         color: Colors.white,
-//                         fontSize: 24,
-//                         fontWeight: FontWeight.bold,
-//                       ),
-//                     ),
-//                     SizedBox(height: 10),
-//                     Text(
-//                       data.email, // Replace with actual email
-//                       style: TextStyle(
-//                         color: Colors.white,
-//                         fontSize: 16,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//               ListTile(
-//                 title: const Text('Edit Credentials'),
-//                 onTap: () {
-//                   Navigator.push(
-//                     context,
-//                     MaterialPageRoute(
-//                       builder: (context) => EditCredentials(
-//                         userModel: data,
-//                       ),
-//                     ),
-//                   );
-//                 },
-//               ),
-//               ListTile(
-//                 title: const Text('Log Out'),
-//                 onTap: () async {
-//                   await FirebaseAuth.instance.signOut();
-//                   Navigator.pushAndRemoveUntil(
-//                       context,
-//                       MaterialPageRoute(
-//                         builder: (context) => Login(),
-//                       ),
-//                       (f) => false);
-//                 },
-//               ),
-//               // Add more drawer items here if needed
-//             ],
-//           ),
-//           error: (error, stackTrace) => Text(error.toString()),
-//           loading: () => LinearProgressIndicator(),
-//         )),
+Future<bool?> showConfirmationDialog(BuildContext context) {
+  return showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Confirm'),
+        content: Text('Are you sure you want to send this message?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // Return false for No
+            },
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true); // Return true for Yes
+            },
+            child: Text('Yes'),
+          ),
+        ],
+      );
+    },
+  );
+}

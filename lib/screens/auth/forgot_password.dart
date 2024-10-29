@@ -90,19 +90,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             _isLoading = true;
                             setState(() {});
                             try {
-                              final UserCredential? credential =
-                                  await FirebaseAuth.instance
-                                      .signInWithEmailAndPassword(
-                                          email: _emailC.text,
-                                          password: _passwordC.text);
-                              if (credential != null) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const MainLayout(),
-                                  ),
-                                );
-                              }
+                              await FirebaseAuth.instance
+                                  .sendPasswordResetEmail(email: _emailC.text);
+                              kSnakbar(context,
+                                  "Please check your email address to reset your password.");
+                              _isLoading = false;
+                              setState(() {});
                             } on FirebaseAuthException catch (e) {
                               if (e.code == 'user-not-found') {
                                 print('No user found for that email.');

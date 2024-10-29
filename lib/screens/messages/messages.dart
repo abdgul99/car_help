@@ -27,8 +27,10 @@ class MessagesTab extends StatelessWidget {
             builder: (context, snapshot, _) {
               if (snapshot.isFetching && snapshot.docs.isEmpty) {
                 return const Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(),
+                    Center(child: CircularProgressIndicator()),
                   ],
                 );
               }
