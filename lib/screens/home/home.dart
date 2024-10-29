@@ -39,7 +39,7 @@ class _HomeTabState extends State<HomeTab> {
 // http://maps.apple.com/?q=help&ll=${position.latitude},${position.longitude}\n\n
   getLocationLink(Position position) {
     mapLinks =
-        "Find on Map: https://www.google.com/maps/search/?api=1&q=help&query=${position.latitude},${position.longitude}";
+        "Find on Map: https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}";
   }
 
   Future<void> getMessage(BuildContext context) async {
@@ -89,7 +89,7 @@ class _HomeTabState extends State<HomeTab> {
                   child: TextFormField(
                     controller: messagesC,
                     readOnly: readOnly,
-                    maxLength: 100,
+                    maxLength: 30,
                     maxLines: null,
                     decoration: InputDecoration(
                       suffixIcon: IconButton(

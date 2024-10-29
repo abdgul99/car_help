@@ -202,7 +202,7 @@ class _ProfileTabState extends State<ProfileTab> {
                           const SizedBox(height: 10),
                           TextFormField(
                             controller: _message,
-                            maxLength: 100,
+                            maxLength: 30,
                             maxLines: null,
                             decoration: const InputDecoration(
                               icon: Icon(Icons.message),
