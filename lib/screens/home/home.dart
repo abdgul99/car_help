@@ -8,7 +8,6 @@ import 'package:car_help_app/ui_helper/snakbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -75,7 +74,7 @@ class _HomeTabState extends State<HomeTab> {
   @override
   Widget build(BuildContext context) {
     return isLoading
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: CircularProgressIndicator())
         : Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -104,14 +103,16 @@ class _HomeTabState extends State<HomeTab> {
                             }
                             setState(() {});
                           },
-                          icon: readOnly ? Icon(Icons.edit) : Icon(Icons.save)),
+                          icon: readOnly
+                              ? const Icon(Icons.edit)
+                              : const Icon(Icons.save)),
                       border: const OutlineInputBorder(),
-                      label: Text("Custom SOS message"),
+                      label: const Text("Custom SOS message"),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Center(
                 child: SizedBox(
                   width: 200,
@@ -144,9 +145,9 @@ class _HomeTabState extends State<HomeTab> {
                     },
                     child: countdown > 0
                         ? Text(
-                            "Please Wait ${countdown.toString()}\n${sendCount}/${sContacts.length}",
+                            "Please Wait ${countdown.toString()}\n$sendCount/${sContacts.length}",
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           )
@@ -160,7 +161,7 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Stack(
                 children: [
                   Center(
@@ -180,7 +181,7 @@ class _HomeTabState extends State<HomeTab> {
                     padding: const EdgeInsets.only(top: 14),
                     child: Container(
                       width: double.infinity,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.blue,
                       ),
                       child: Padding(
@@ -190,7 +191,7 @@ class _HomeTabState extends State<HomeTab> {
                             TextSpan(text: "${messagesC.text}\n", children: [
                               if (mapLinks != null) TextSpan(text: mapLinks),
                             ]),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
                       ),
@@ -250,7 +251,7 @@ class _HomeTabState extends State<HomeTab> {
   }
 
   void startCountdown() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       if (countdown > 0) {
         countdown--;
 
@@ -354,20 +355,20 @@ Future<bool?> showConfirmationDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Confirm'),
-        content: Text('Are you sure you want to send this message?'),
+        title: const Text('Confirm'),
+        content: const Text('Are you sure you want to send this message?'),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(false); // Return false for No
             },
-            child: Text('No'),
+            child: const Text('No'),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(true); // Return true for Yes
             },
-            child: Text('Yes'),
+            child: const Text('Yes'),
           ),
         ],
       );
